@@ -1,5 +1,4 @@
 import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 
 type Props = {
   children: React.ReactNode;
@@ -14,9 +13,12 @@ export const Draggable: React.FC<Props> = ({ children }) => {
   //const style = transform ? {
   // transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   // } : undefined;
-  const style = {
-    transform: CSS.Transform.toString(transform),
-  };
+  // Utilを使うとDrag中にScaleも変更される
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
 
   return (
     <button style={style} ref={setNodeRef} {...listeners} {...attributes}>
