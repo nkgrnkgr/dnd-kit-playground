@@ -1,13 +1,20 @@
 import { FormContents } from "./FormContents";
 import { Sidebar } from "./Sidebar";
 import "./index.css";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
 const Component: React.FC = () => {
+  const handleDragEnd = (event: DragEndEvent) => {
+    //
+  };
+
   return (
-    <form className="form">
-      <Sidebar />
-      <FormContents />
-    </form>
+    <DndContext onDragEnd={handleDragEnd}>
+      <form className="form">
+        <Sidebar />
+        <FormContents />
+      </form>
+    </DndContext>
   );
 };
 

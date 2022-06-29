@@ -3,11 +3,12 @@ import "./index.css";
 
 type Props = {
   children: React.ReactNode;
+  id: string;
 };
 
-export const Draggable: React.FC<Props> = ({ children }) => {
+export const Draggable: React.FC<Props> = ({ children, id }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: "draggable",
+    id,
   });
 
   // Dragして動かすためにいる。ないと動いているように見えない

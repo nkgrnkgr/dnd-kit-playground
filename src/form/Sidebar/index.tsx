@@ -8,7 +8,7 @@ const Component: React.FC = () => {
     <div className="Sidebar">
       {sideBarItems.map((item) => (
         <div className="SidebarItemWrapper" key={item.id}>
-          <SidebarItem label={item.label} />
+          <SidebarItem id={item.id.toString()} label={item.label} />
         </div>
       ))}
     </div>

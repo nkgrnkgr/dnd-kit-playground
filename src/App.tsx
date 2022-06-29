@@ -1,9 +1,9 @@
-import { Dnd } from "./dnd";
+import { Form } from "./form";
 
 function App() {
   return (
     <div className="App">
-      <Dnd />
+      <Form />
     </div>
   );
 }
