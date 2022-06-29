@@ -1,18 +1,29 @@
-import { FormContents } from "./FormContents";
-import { Sidebar } from "./Sidebar";
-import "./index.css";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { useState } from "react";
+import { FormContents } from "./FormContents";
+import "./index.css";
+import { Sidebar } from "./Sidebar";
+import { Content } from "./types/Content";
 
 const Component: React.FC = () => {
-  const handleDragEnd = (event: DragEndEvent) => {
-    //
+  const [contents, setContents] = useState<Content[]>([]);
+
+  const handleDragEnd = ({ over, active }: DragEndEvent) => {
+    if (over) {
+      const newContent = {
+        id: active.id.toString(),
+        label: `item-${active.id.toString()}`,
+      };
+
+      setContents([...contents, newContent]);
+    }
   };
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="form">
         <Sidebar />
-        <FormContents />
+        <FormContents contents={contents} />
       </div>
     </DndContext>
   );
