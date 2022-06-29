@@ -10,10 +10,10 @@ const Component: React.FC = () => {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <form className="form">
+      <div className="form">
         <Sidebar />
         <FormContents />
-      </form>
+      </div>
     </DndContext>
   );
 };
