@@ -9,4 +9,4 @@ const Component: React.FC<Props> = ({ id, label }) => {
   return <div className="FormContents">{label}</div>;
 };
 
-export const FormContents = Component;
+export const FormContentsItem = Component;
