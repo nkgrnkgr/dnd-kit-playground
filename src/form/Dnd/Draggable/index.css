@@ -1,0 +1,6 @@
+.draggable {
+  border: none;
+  cursor: grab;
+  font-size: inherit;
+  padding: 0;
+}

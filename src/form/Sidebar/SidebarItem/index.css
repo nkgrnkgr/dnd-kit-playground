@@ -1,0 +1,7 @@
+.SidebarItem {
+  width: 160px;
+  padding: 6px;
+  background-color: aquamarine;
+  box-sizing: border-box;
+  font-size: 12px;
+}

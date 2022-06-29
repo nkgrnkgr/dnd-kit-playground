@@ -1,0 +1,10 @@
+.Sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  width: 350px;
+}
+
+.SidebarItemWrapper {
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
