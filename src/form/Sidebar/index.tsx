@@ -11,7 +11,6 @@ const Component: React.FC = () => {
           <SidebarItem id={item.id.toString()} label={item.label} />
         </div>
       ))}
-      <div className="SidebarItem">a</div>
     </div>
   );
 };
