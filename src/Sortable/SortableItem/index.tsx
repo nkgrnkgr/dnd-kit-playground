@@ -6,7 +6,7 @@ type Props = {
   id: number;
 };
 
-export const SortableItem: React.VFC<Props> = ({ id }) => {
+export const SortableItem: React.FC<Props> = ({ id }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
