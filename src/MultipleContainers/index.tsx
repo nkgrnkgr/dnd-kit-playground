@@ -54,7 +54,7 @@ export const MultipleContainers: React.FC = () => {
           strategy={verticalListSortingStrategy}
         >
           {containers.map((containerId) => (
-            <DroppableContainer key={containerId}>
+            <DroppableContainer key={containerId} id={containerId}>
               {
                 <SortableContext
                   items={items[containerId]}
