@@ -1,13 +1,23 @@
-import { DndContext, UniqueIdentifier } from "@dnd-kit/core";
 import {
-  horizontalListSortingStrategy,
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  UniqueIdentifier,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import React, { useState } from "react";
-import { SortableItem } from "../Sortable/SortableItem";
+import { SortableItem } from "./components/SortableItem";
 import { DroppableContainer } from "./DroppableContainer";
 import "./index.css";
+import { coordinateGetter as multipleContainersCoordinateGetter } from "./multipleContainersKeyboardCoordinates";
 
 const PLACEHOLDER_ID = "placeholder";
 
@@ -28,12 +38,20 @@ export const MultipleContainers: React.FC = () => {
     Object.keys(items) as UniqueIdentifier[]
   );
 
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: multipleContainersCoordinateGetter,
+    })
+  );
+
   return (
-    <DndContext>
+    <DndContext sensors={sensors} collisionDetection={closestCenter}>
       <div className="multiple-containers">
         <SortableContext
           items={[...containers, PLACEHOLDER_ID]}
-          strategy={horizontalListSortingStrategy}
+          strategy={verticalListSortingStrategy}
         >
           {containers.map((containerId) => (
             <DroppableContainer key={containerId}>
@@ -43,7 +61,7 @@ export const MultipleContainers: React.FC = () => {
                   strategy={verticalListSortingStrategy}
                 >
                   {items[containerId].map((value, index) => {
-                    return <SortableItem key={value} id={Number(index)} />;
+                    return <SortableItem key={value} id={value} />;
                   })}
                 </SortableContext>
               }
