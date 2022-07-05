@@ -4,8 +4,8 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useState } from "@storybook/addons";
-import React from "react";
+import React, { useState } from "react";
+import { SortableItem } from "../Sortable/SortableItem";
 import { DroppableContainer } from "./DroppableContainer";
 import "./index.css";
 
@@ -41,7 +41,11 @@ export const MultipleContainers: React.FC = () => {
                 <SortableContext
                   items={items[containerId]}
                   strategy={verticalListSortingStrategy}
-                ></SortableContext>
+                >
+                  {items[containerId].map((value, index) => {
+                    return <SortableItem key={value} id={Number(index)} />;
+                  })}
+                </SortableContext>
               }
             </DroppableContainer>
           ))}
