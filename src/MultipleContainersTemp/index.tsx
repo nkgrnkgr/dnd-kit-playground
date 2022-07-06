@@ -1,73 +1,132 @@
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  UniqueIdentifier,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import React, { useState } from "react";
 import { Container } from "./Container";
-import { SortableItem } from "./SortableItem";
 
 // Document
 // Storybook https://master--5fc05e08a4a65d0021ae0bf2.chromatic.com/?path=/story/presets-sortable-multiple-containers--basic-setup
 // Source https://github.com/clauderic/dnd-kit/blob/master/stories/2%20-%20Presets/Sortable/MultipleContainers.tsx
 
-// export const MultipleContainers: React.FC = () => {
-//   const ITEM_CONTAINER_IDS = ["A", "B", "C", "D"];
-//   const ITEMS: Record<string, string[]> = {
-//     A: ["A1", "A2", "A3"],
-//     B: ["B1", "B2", "B3"],
-//     C: ["C1", "C2", "C3"],
-//     D: ["D1", "D2", "D3"],
-//   };
-//   return (
-//     <DndContext>
-//       <SortableContext items={ITEM_CONTAINER_IDS}>
-//         {ITEM_CONTAINER_IDS.map((containerId, index) => (
-//           <div
-//             style={{ padding: "10px", margin: "5px", border: "1px solid" }}
-//             key={containerId}
-//           >
-//             {containerId}
-//             <SortableContext items={ITEMS[containerId]}>
-//               {ITEMS[containerId].map((item) => (
-//                 <SortableItem key={item} id={item} />
-//               ))}
-//             </SortableContext>
-//           </div>
-//         ))}
-//       </SortableContext>
-//     </DndContext>
-//   );
-// };
+// example https://codesandbox.io/s/lknfe?file=/src/app.js
 
 export const MultipleContainers: React.FC = () => {
-  const [itemIdsA, setItemIdsA] = useState(["A1", "A2", "A3"]);
-  const [itemIdsB, setItemIdsB] = useState(["B1", "B2", "B3"]);
+  const [activeId, setActiveId] = useState<UniqueIdentifier>();
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const [items, setItems] = useState<Record<string, string[]>>({
+    root: ["1", "2", "3"],
+    container1: ["4", "5", "6"],
+    container2: ["7", "8", "9"],
+    container3: [],
+  });
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over) {
     }
   };
 
+  const findContainer = (id: UniqueIdentifier) => {
+    if (id in items) {
+      return id;
+    }
+
+    return Object.keys(items).find((key) => items[key].includes(id));
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const { id } = active;
+
+    setActiveId(id);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over, active } = event;
+    const overId = over?.id;
+
+    if (overId == null || active.id in items) {
+      return;
+    }
+
+    // Find the containers
+    const activeContainer = findContainer(active.id);
+    const overContainer = findContainer(overId);
+
+    if (
+      !activeContainer ||
+      !overContainer ||
+      activeContainer === overContainer
+    ) {
+      return;
+    }
+
+    if (activeContainer !== overContainer) {
+      setItems((prev) => {
+        const activeItems = prev[activeContainer];
+        const overItems = prev[overContainer];
+        const overIndex = overItems.indexOf(overId.toString());
+        const activeIndex = activeItems.indexOf(active.id.toString());
+
+        let newIndex;
+        if (overId in prev) {
+          // We're at the root droppable of a container
+          newIndex = overItems.length + 1;
+        } else {
+          const isBelowLastItem =
+            over &&
+            active.rect.current.translated &&
+            active.rect.current.translated.top >
+              over.rect.top + over.rect.height;
+
+          const modifier = isBelowLastItem ? 1 : 0;
+
+          newIndex =
+            overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+        }
+
+        return {
+          ...prev,
+          [activeContainer]: [
+            ...prev[activeContainer].filter((item) => item !== active.id),
+          ],
+          [overContainer]: [
+            ...prev[overContainer].slice(0, newIndex),
+            items[activeContainer][activeIndex],
+            ...prev[overContainer].slice(newIndex, prev[overContainer].length),
+          ],
+        };
+      });
+    }
+  };
+
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ display: "flex" }}>
-        <div style={{ margin: "10px" }}>
-          <SortableContext items={itemIdsA}>
-            <Container id={"A"}>
-              {itemIdsA.map((id) => (
-                <SortableItem key={id} id={id} />
-              ))}
-            </Container>
-          </SortableContext>
-        </div>
-        <div style={{ margin: "10px" }}>
-          <SortableContext items={itemIdsB}>
-            <Container id={"B"}>
-              {itemIdsB.map((id) => (
-                <SortableItem key={id} id={id} />
-              ))}
-            </Container>
-          </SortableContext>
-        </div>
-      </div>
+    <DndContext
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+    >
+      <Container id="root" items={items.root} />
+      <Container id="container1" items={items.container1} />
+      <Container id="container2" items={items.container2} />
+      <Container id="container3" items={items.container3} />
     </DndContext>
   );
 };
