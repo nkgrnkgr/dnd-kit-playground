@@ -8,8 +8,8 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const SortableItem: React.FC<Props> = ({ id }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
+export const Container: React.FC<Props> = ({ id, children }) => {
+  const { attributes, transform, transition, listeners, setNodeRef } =
     useSortable({ id });
 
   const style = {
@@ -19,7 +19,7 @@ export const SortableItem: React.FC<Props> = ({ id }) => {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {`S item ${id}`}
+      {children}
     </div>
   );
 };
